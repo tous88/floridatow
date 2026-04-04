@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 
 <html lang="en">
 <head>
@@ -277,7 +277,7 @@ footer a { color: var(–yellow); text-decoration: none; }
   <div class="logo">🚛 FloridaTow</div>
   <p>Serving all of Florida 24/7<br>
   <a href="tel:+15613350989">(561) 335-0989</a> &nbsp;·&nbsp;
-  <a href="mailto:toussaintshelton2@gmail.com">toussaintshelton2@gmail.com</a></p>
+  <a href="/cdn-cgi/l/email-protection#99edf6eceaeaf8f0f7edeaf1fcf5edf6f7abd9fef4f8f0f5b7faf6f4"><span class="__cf_email__" data-cfemail="c2b6adb7b1b1a3abacb6b1aaa7aeb6adacf082a5afa3abaeeca1adaf">[email&#160;protected]</span></a></p>
   <p style="margin-top:12px">&copy; 2026 FloridaTow. All rights reserved.</p>
 </footer>
 
@@ -287,99 +287,107 @@ footer a { color: var(–yellow); text-decoration: none; }
   <a href="#request">🚛 Request a Tow</a>
 </div>
 
-<script>
-var selectedCity = 'Miami';
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+
+var selectedCity = ‘Miami’;
 
 function setCity(city) {
-  selectedCity = city;
+selectedCity = city;
 
-  // Update hidden inputs
-  document.getElementById('f-city').value = city;
-  document.getElementById('f-subject').value = '🚛 New Tow Lead — ' + city;
+// Update hidden inputs
+document.getElementById(‘f-city’).value = city;
+document.getElementById(‘f-subject’).value = ’🚛 New Tow Lead — ’ + city;
 
-  // Update form label
-  document.getElementById('form-city-label').textContent = '📍 ' + city;
+// Update form label
+document.getElementById(‘form-city-label’).textContent = ’📍 ’ + city;
 
-  // Update hero pills
-  var pills = document.querySelectorAll('.city-pill');
-  for (var i = 0; i < pills.length; i++) {
-    if (pills[i].getAttribute('data-city') === city) {
-      pills[i].classList.add('active');
-    } else {
-      pills[i].classList.remove('active');
-    }
-  }
+// Update hero pills
+var pills = document.querySelectorAll(’.city-pill’);
+for (var i = 0; i < pills.length; i++) {
+if (pills[i].getAttribute(‘data-city’) === city) {
+pills[i].classList.add(‘active’);
+} else {
+pills[i].classList.remove(‘active’);
+}
+}
 
-  // Update city cards
-  var cards = document.querySelectorAll('.city-card');
-  for (var j = 0; j < cards.length; j++) {
-    if (cards[j].getAttribute('data-city') === city) {
-      cards[j].classList.add('active');
-    } else {
-      cards[j].classList.remove('active');
-    }
-  }
+// Update city cards
+var cards = document.querySelectorAll(’.city-card’);
+for (var j = 0; j < cards.length; j++) {
+if (cards[j].getAttribute(‘data-city’) === city) {
+cards[j].classList.add(‘active’);
+} else {
+cards[j].classList.remove(‘active’);
+}
+}
 }
 
 // City pill clicks
-var pills = document.querySelectorAll('.city-pill');
+var pills = document.querySelectorAll(’.city-pill’);
 for (var i = 0; i < pills.length; i++) {
-  pills[i].addEventListener('click', function() {
-    setCity(this.getAttribute('data-city'));
-  });
+pills[i].addEventListener(‘click’, function() {
+setCity(this.getAttribute(‘data-city’));
+});
 }
 
 // City card clicks
-var cards = document.querySelectorAll('.city-card');
+var cards = document.querySelectorAll(’.city-card’);
 for (var j = 0; j < cards.length; j++) {
-  cards[j].addEventListener('click', function() {
-    setCity(this.getAttribute('data-city'));
-    document.getElementById('request').scrollIntoView({ behavior: 'smooth' });
-  });
+cards[j].addEventListener(‘click’, function() {
+setCity(this.getAttribute(‘data-city’));
+document.getElementById(‘request’).scrollIntoView({ behavior: ‘smooth’ });
+});
 }
 
 // Float CTA
-window.addEventListener('scroll', function() {
-  document.getElementById('float-cta').style.display = window.scrollY > 500 ? 'block' : 'none';
+window.addEventListener(‘scroll’, function() {
+document.getElementById(‘float-cta’).style.display = window.scrollY > 500 ? ‘block’ : ‘none’;
 });
 
 // Form submit
-var form = document.getElementById('lead-form');
+var form = document.getElementById(‘lead-form’);
+var SUPA_URL = ‘https://cowwlpiatpyiadrllkzr.supabase.co’;
+var SUPA_KEY = ‘eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNvd3dscGlhdHB5aWFkcmxsa3pyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NzY1MTMsImV4cCI6MjA5MDI1MjUxM30.afIHLIsLDmjaVVfZrYhmqtSMMhXhcv4KTdZ0yYN9Eno’;
 
-form.addEventListener('submit', function(e) {
-  e.preventDefault();
-  var btn = document.getElementById('submit-btn');
-  btn.disabled = true;
-  btn.textContent = 'Sending...';
+form.addEventListener(‘submit’, function(e) {
+e.preventDefault();
+var btn = document.getElementById(‘submit-btn’);
+btn.disabled = true;
+btn.textContent = ‘Sending…’;
 
-  var leadData = {
-    name: document.querySelector('[name="name"]').value,
-    phone: document.querySelector('[name="phone"]').value,
-    location: document.querySelector('[name="location"]').value,
-    service: document.querySelector('[name="service"]').value,
-    vehicle: document.querySelector('[name="vehicle"]').value,
-    city: selectedCity
-  };
+var leadData = {
+name: document.querySelector(’[name=“name”]’).value,
+phone: document.querySelector(’[name=“phone”]’).value,
+location: document.querySelector(’[name=“location”]’).value,
+service: document.querySelector(’[name=“service”]’).value,
+vehicle: document.querySelector(’[name=“vehicle”]’).value,
+city: selectedCity
+};
 
-  // Send to Supabase Edge Function (auto-routes to partners)
-  fetch('https://cowwlpiatpyiadrllkzr.supabase.co/functions/v1/route-lead', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(leadData)
-  }).then(function() {
-    // Also send to Formspree as backup
-    var data = new FormData(form);
-    fetch('https://formspree.io/f/xkopqnlv', { method: 'POST', body: data, headers: { 'Accept': 'application/json' } });
-    document.getElementById('lead-form-wrap').style.display = 'none';
-    document.getElementById('success-box').style.display = 'block';
-  }).catch(function() {
-    // Fallback to Formspree only
-    var data = new FormData(form);
-    fetch('https://formspree.io/f/xkopqnlv', { method: 'POST', body: data, headers: { 'Accept': 'application/json' } }).then(function() {
-      document.getElementById('lead-form-wrap').style.display = 'none';
-      document.getElementById('success-box').style.display = 'block';
-    });
-  });
+// Save directly to Supabase
+fetch(SUPA_URL + ‘/rest/v1/floridatow_leads’, {
+method: ‘POST’,
+headers: {
+‘apikey’: SUPA_KEY,
+‘Authorization’: ’Bearer ’ + SUPA_KEY,
+‘Content-Type’: ‘application/json’,
+‘Prefer’: ‘return=minimal’
+},
+body: JSON.stringify(leadData)
+}).then(function() {
+// Also send to Formspree
+var data = new FormData(form);
+fetch(‘https://formspree.io/f/xkopqnlv’, { method: ‘POST’, body: data, headers: { ‘Accept’: ‘application/json’ } });
+document.getElementById(‘lead-form-wrap’).style.display = ‘none’;
+document.getElementById(‘success-box’).style.display = ‘block’;
+}).catch(function() {
+// Fallback to Formspree only
+var data = new FormData(form);
+fetch(‘https://formspree.io/f/xkopqnlv’, { method: ‘POST’, body: data, headers: { ‘Accept’: ‘application/json’ } }).then(function() {
+document.getElementById(‘lead-form-wrap’).style.display = ‘none’;
+document.getElementById(‘success-box’).style.display = ‘block’;
+});
+});
 });
 </script>
 
