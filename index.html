@@ -277,7 +277,7 @@ footer a { color: var(–yellow); text-decoration: none; }
   <div class="logo">🚛 FloridaTow</div>
   <p>Serving all of Florida 24/7<br>
   <a href="tel:+15613350989">(561) 335-0989</a> &nbsp;·&nbsp;
-  <a href="/cdn-cgi/l/email-protection#572338222424363e3923243f323b2338396517303a363e3b7934383a"><span class="__cf_email__" data-cfemail="0a7e657f79796b63647e79626f667e6564384a6d676b636624696567">[email&#160;protected]</span></a></p>
+  <a href="mailto:toussaintshelton2@gmail.com">toussaintshelton2@gmail.com</a></p>
   <p style="margin-top:12px">&copy; 2026 FloridaTow. All rights reserved.</p>
 </footer>
 
@@ -287,77 +287,101 @@ footer a { color: var(–yellow); text-decoration: none; }
   <a href="#request">🚛 Request a Tow</a>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-
-var selectedCity = ‘Miami’;
+<script>
+var selectedCity = 'Miami';
 
 function setCity(city) {
-selectedCity = city;
+  selectedCity = city;
 
-// Update hidden inputs
-document.getElementById(‘f-city’).value = city;
-document.getElementById(‘f-subject’).value = ’🚛 New Tow Lead — ’ + city;
+  // Update hidden inputs
+  document.getElementById('f-city').value = city;
+  document.getElementById('f-subject').value = '🚛 New Tow Lead — ' + city;
 
-// Update form label
-document.getElementById(‘form-city-label’).textContent = ’📍 ’ + city;
+  // Update form label
+  document.getElementById('form-city-label').textContent = '📍 ' + city;
 
-// Update hero pills
-var pills = document.querySelectorAll(’.city-pill’);
-for (var i = 0; i < pills.length; i++) {
-if (pills[i].getAttribute(‘data-city’) === city) {
-pills[i].classList.add(‘active’);
-} else {
-pills[i].classList.remove(‘active’);
-}
-}
+  // Update hero pills
+  var pills = document.querySelectorAll('.city-pill');
+  for (var i = 0; i < pills.length; i++) {
+    if (pills[i].getAttribute('data-city') === city) {
+      pills[i].classList.add('active');
+    } else {
+      pills[i].classList.remove('active');
+    }
+  }
 
-// Update city cards
-var cards = document.querySelectorAll(’.city-card’);
-for (var j = 0; j < cards.length; j++) {
-if (cards[j].getAttribute(‘data-city’) === city) {
-cards[j].classList.add(‘active’);
-} else {
-cards[j].classList.remove(‘active’);
-}
-}
+  // Update city cards
+  var cards = document.querySelectorAll('.city-card');
+  for (var j = 0; j < cards.length; j++) {
+    if (cards[j].getAttribute('data-city') === city) {
+      cards[j].classList.add('active');
+    } else {
+      cards[j].classList.remove('active');
+    }
+  }
 }
 
 // City pill clicks
-var pills = document.querySelectorAll(’.city-pill’);
+var pills = document.querySelectorAll('.city-pill');
 for (var i = 0; i < pills.length; i++) {
-pills[i].addEventListener(‘click’, function() {
-setCity(this.getAttribute(‘data-city’));
-});
+  pills[i].addEventListener('click', function() {
+    setCity(this.getAttribute('data-city'));
+  });
 }
 
 // City card clicks
-var cards = document.querySelectorAll(’.city-card’);
+var cards = document.querySelectorAll('.city-card');
 for (var j = 0; j < cards.length; j++) {
-cards[j].addEventListener(‘click’, function() {
-setCity(this.getAttribute(‘data-city’));
-document.getElementById(‘request’).scrollIntoView({ behavior: ‘smooth’ });
-});
+  cards[j].addEventListener('click', function() {
+    setCity(this.getAttribute('data-city'));
+    document.getElementById('request').scrollIntoView({ behavior: 'smooth' });
+  });
 }
 
 // Float CTA
-window.addEventListener(‘scroll’, function() {
-document.getElementById(‘float-cta’).style.display = window.scrollY > 500 ? ‘block’ : ‘none’;
+window.addEventListener('scroll', function() {
+  document.getElementById('float-cta').style.display = window.scrollY > 500 ? 'block' : 'none';
 });
 
 // Form submit
-var form = document.getElementById(‘lead-form’);
-document.getElementById(‘submit-btn’).addEventListener(‘click’, function() {});
+var form = document.getElementById('lead-form');
 
-form.addEventListener(‘submit’, function(e) {
-e.preventDefault();
-var btn = document.getElementById(‘submit-btn’);
-btn.disabled = true;
-btn.textContent = ‘Sending…’;
-var data = new FormData(form);
-fetch(form.action, {
-method: ‘POST’,
-body: data,
-headers: { ‘Accept’: ‘application/json’ }
-}).then(function() {
-document.getElementById(‘lead-form-wrap’).style.display = ‘none’;
-doc
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
+  var btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  var leadData = {
+    name: document.querySelector('[name="name"]').value,
+    phone: document.querySelector('[name="phone"]').value,
+    location: document.querySelector('[name="location"]').value,
+    service: document.querySelector('[name="service"]').value,
+    vehicle: document.querySelector('[name="vehicle"]').value,
+    city: selectedCity
+  };
+
+  // Send to Supabase Edge Function (auto-routes to partners)
+  fetch('https://cowwlpiatpyiadrllkzr.supabase.co/functions/v1/route-lead', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(leadData)
+  }).then(function() {
+    // Also send to Formspree as backup
+    var data = new FormData(form);
+    fetch('https://formspree.io/f/xkopqnlv', { method: 'POST', body: data, headers: { 'Accept': 'application/json' } });
+    document.getElementById('lead-form-wrap').style.display = 'none';
+    document.getElementById('success-box').style.display = 'block';
+  }).catch(function() {
+    // Fallback to Formspree only
+    var data = new FormData(form);
+    fetch('https://formspree.io/f/xkopqnlv', { method: 'POST', body: data, headers: { 'Accept': 'application/json' } }).then(function() {
+      document.getElementById('lead-form-wrap').style.display = 'none';
+      document.getElementById('success-box').style.display = 'block';
+    });
+  });
+});
+</script>
+
+</body>
+</html>
