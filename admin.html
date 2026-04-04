@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FloridaTow — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --yellow: #FFD000; --black: #0A0A0A; --dark: #111; --dark2: #1A1A1A; --dark3: #222; --blue: #64B5F6; --green: #81C784; --red: #EF5350; --orange: #FF8A65; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--black); color: #E8EAF0; font-family: 'DM Sans', sans-serif; min-height: 100vh; padding-bottom: 40px; }
+
+/* LOGIN */
+#login-screen { position: fixed; inset: 0; background: var(–black); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
+.login-box { background: var(–dark2); border: 1px solid var(–dark3); border-radius: 12px; padding: 32px 24px; width: 100%; max-width: 360px; text-align: center; }
+.login-logo { font-family: ‘DM Mono’, monospace; font-size: 22px; font-weight: 500; color: var(–yellow); margin-bottom: 6px; }
+.login-sub { font-size: 12px; color: #555; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 28px; }
+.login-box input { width: 100%; background: var(–black); border: 1px solid var(–dark3); border-radius: 7px; padding: 12px 14px; color: #E8EAF0; font-size: 15px; outline: none; margin-bottom: 12px; }
+.login-box input:focus { border-color: var(–yellow); }
+.login-btn { width: 100%; background: var(–yellow); color: var(–black); border: none; border-radius: 7px; padding: 13px; font-size: 16px; font-weight: 700; cursor: pointer; }
+.login-error { color: var(–red); font-size: 13px; margin-top: 10px; display: none; }
+
+/* HEADER */
+header { border-bottom: 1px solid var(–dark3); padding: 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(–black); z-index: 10; }
+.header-logo { font-family: ‘DM Mono’, monospace; font-size: 14px; color: var(–yellow); }
+.header-right { display: flex; gap: 8px; align-items: center; }
+.logout-btn { background: none; border: 1px solid var(–dark3); border-radius: 6px; padding: 6px 12px; color: #666; font-size: 12px; cursor: pointer; }
+
+/* TABS */
+.tabs { display: flex; border-bottom: 1px solid var(–dark3); padding: 0 16px; overflow-x: auto; }
+.tab { padding: 12px 16px; font-size: 13px; font-weight: 600; color: #555; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
+.tab.active { color: var(–yellow); border-bottom-color: var(–yellow); }
+
+/* STATS */
+.stats { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; padding: 14px 16px 0; }
+.stat { background: var(–dark2); border: 1px solid var(–dark3); border-radius: 8px; padding: 12px; }
+.stat-val { font-size: 24px; font-weight: 700; }
+.stat-lbl { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+/* SECTION */
+.section { padding: 16px; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.section-title { font-family: ‘DM Mono’, monospace; font-size: 12px; color: var(–yellow); letter-spacing: 2px; text-transform: uppercase; }
+.add-btn { background: var(–yellow); color: var(–black); border: none; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 700; cursor: pointer; }
+
+/* CARDS */
+.card-list { display: flex; flex-direction: column; gap: 8px; }
+.card { background: var(–dark2); border: 1px solid var(–dark3); border-radius: 10px; padding: 14px; }
+.card-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.card-name { font-weight: 700; font-size: 15px; margin-bottom: 3px; }
+.card-sub { font-size: 12px; color: #666; }
+.card-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.btn-sm { border-radius: 5px; padding: 5px 10px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; }
+.btn-edit { background: rgba(100,181,246,0.15); color: var(–blue); }
+.btn-delete { background: rgba(239,83,80,0.15); color: var(–red); }
+.btn-toggle { background: rgba(129,199,132,0.15); color: var(–green); }
+.badge { display: inline-block; border-radius: 4px; padding: 2px 8px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px; }
+.badge-pro { background: rgba(255,208,0,0.15); color: var(–yellow); border: 1px solid rgba(255,208,0,0.3); }
+.badge-starter { background: rgba(100,181,246,0.12); color: var(–blue); border: 1px solid rgba(100,181,246,0.3); }
+.badge-ppl { background: rgba(255,138,101,0.12); color: var(–orange); border: 1px solid rgba(255,138,101,0.3); }
+.badge-inactive { background: rgba(120,144,156,0.12); color: #78909C; border: 1px solid rgba(120,144,156,0.3); }
+
+/* LEAD CARD */
+.lead-card { background: var(–dark2); border: 1px solid var(–dark3); border-radius: 10px; overflow: hidden; }
+.lead-body { padding: 14px; }
+.lead-city { font-size: 10px; color: var(–yellow); font-family: ‘DM Mono’, monospace; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+.lead-name { font-weight: 700; font-size: 15px; margin-bottom: 2px; }
+.lead-detail { font-size: 12px; color: #666; margin-bottom: 6px; }
+.lead-routed { font-size: 11px; color: #444; border-top: 1px solid var(–dark3); padding-top: 8px; margin-top: 8px; }
+.lead-routed span { color: var(–green); }
+.lead-actions { display: flex; border-top: 1px solid var(–dark3); }
+.lead-actions a { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 9px; font-size: 12px; font-weight: 700; text-decoration: none; }
+.lead-call { color: var(–green); border-right: 1px solid var(–dark3); }
+.lead-time { font-size: 11px; color: #444; font-family: ‘DM Mono’, monospace; }
+
+/* MODAL */
+#modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+#modal.open { display: flex; }
+.modal-box { background: var(–dark2); border: 1px solid var(–dark3); border-radius: 12px; width: 100%; max-width: 440px; padding: 24px; max-height: 90vh; overflow-y: auto; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.modal-title { font-family: ‘DM Mono’, monospace; font-size: 13px; color: var(–yellow); letter-spacing: 2px; text-transform: uppercase; }
+.modal-close { background: none; border: none; color: #666; font-size: 20px; cursor: pointer; }
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 11px; color: #666; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
+.field input, .field select { width: 100%; background: var(–black); border: 1px solid var(–dark3); border-radius: 6px; padding: 10px 12px; color: #E8EAF0; font-size: 14px; outline: none; }
+.field input:focus, .field select:focus { border-color: var(–yellow); }
+.field select option { background: var(–black); }
+.modal-footer { display: flex; gap: 10px; margin-top: 20px; }
+.save-btn { flex: 1; background: var(–yellow); border: none; border-radius: 7px; padding: 12px; color: var(–black); font-weight: 700; font-size: 14px; cursor: pointer; }
+.del-btn { background: rgba(239,83,80,0.15); border: 1px solid rgba(239,83,80,0.3); border-radius: 7px; padding: 12px 18px; color: var(–red); font-weight: 700; font-size: 14px; cursor: pointer; display: none; }
+
+/* EMPTY */
+.empty { text-align: center; color: #444; padding: 40px 0; font-size: 14px; }
+
+/* LOADING */
+.loading { text-align: center; color: #444; padding: 30px 0; font-size: 13px; }
+
+/* CITY FILTER */
+.city-filter { display: flex; gap: 6px; overflow-x: auto; padding: 0 16px 12px; }
+.city-filter::-webkit-scrollbar { display: none; }
+.cf-btn { background: var(–dark2); border: 1px solid var(–dark3); border-radius: 20px; padding: 4px 12px; font-size: 11px; color: #666; cursor: pointer; white-space: nowrap; }
+.cf-btn.active { background: rgba(255,208,0,0.1); border-color: var(–yellow); color: var(–yellow); font-weight: 700; }
+</style>
+
+</head>
+<body>
+
+<!-- LOGIN -->
+
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">🚛 FloridaTow</div>
+    <div class="login-sub">Admin Dashboard</div>
+    <input type="password" id="login-pass" placeholder="Enter password">
+    <button class="login-btn" onclick="checkLogin()">Login</button>
+    <div class="login-error" id="login-error">Wrong password</div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+
+<div id="app" style="display:none">
+
+  <header>
+    <div class="header-logo">🚛 FloridaTow Admin</div>
+    <div class="header-right">
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- STATS -->
+
+  <div class="stats">
+    <div class="stat"><div class="stat-val" id="s-partners" style="color:var(--yellow)">—</div><div class="stat-lbl">Partners</div></div>
+    <div class="stat"><div class="stat-val" id="s-leads" style="color:var(--blue)">—</div><div class="stat-lbl">Leads</div></div>
+    <div class="stat"><div class="stat-val" id="s-pro" style="color:var(--green)">—</div><div class="stat-lbl">Pro</div></div>
+    <div class="stat"><div class="stat-val" id="s-mrr" style="color:var(--orange)">—</div><div class="stat-lbl">MRR</div></div>
+  </div>
+
+  <!-- TABS -->
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('partners')">Partners</div>
+    <div class="tab" onclick="switchTab('leads')">Leads</div>
+  </div>
+
+  <!-- PARTNERS TAB -->
+
+  <div id="tab-partners">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">Partner Companies</div>
+        <button class="add-btn" onclick="openModal(null)">+ Add Partner</button>
+      </div>
+      <div class="city-filter" id="partner-city-filter"></div>
+      <div class="card-list" id="partners-list"><div class="loading">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- LEADS TAB -->
+
+  <div id="tab-leads" style="display:none">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">Incoming Leads</div>
+      </div>
+      <div class="city-filter" id="lead-city-filter"></div>
+      <div class="card-list" id="leads-list"><div class="loading">Loading...</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+
+<div id="modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">Add Partner</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="field"><label>Company Name *</label><input type="text" id="f-company" placeholder="FastTow Miami"></div>
+    <div class="field"><label>Contact Name</label><input type="text" id="f-contact" placeholder="John Smith"></div>
+    <div class="field"><label>Email *</label><input type="email" id="f-email" placeholder="john@fasttow.com"></div>
+    <div class="field"><label>Phone</label><input type="tel" id="f-phone" placeholder="+1 305 555 0100"></div>
+    <div class="field">
+      <label>City *</label>
+      <select id="f-city">
+        <option value="Miami">Miami</option>
+        <option value="Orlando">Orlando</option>
+        <option value="Tampa">Tampa</option>
+        <option value="Jacksonville">Jacksonville</option>
+        <option value="Fort Lauderdale">Fort Lauderdale</option>
+        <option value="Other">Other (All Florida)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Plan *</label>
+      <select id="f-plan">
+        <option value="pro">Pro — $299/month</option>
+        <option value="starter">Starter — $199/month</option>
+        <option value="pay-per-lead">Pay Per Lead — $25/lead</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="save-btn" onclick="savePartner()">Save Partner</button>
+      <button class="del-btn" id="del-btn" onclick="deletePartner()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var SUPABASE_URL = 'https://cowwlpiatpyiadrllkzr.supabase.co';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNvd3dscGlhdHB5aWFkcmxsa3pyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NzY1MTMsImV4cCI6MjA5MDI1MjUxM30.afIHLIsLDmjaVVfZrYhmqtSMMhXhcv4KTdZ0yYN9Eno';
+var ADMIN_PASS = 'floridatow2026';
+var CITIES = ['All', 'Miami', 'Orlando', 'Tampa', 'Jacksonville', 'Fort Lauderdale', 'Other'];
+
+var partners = [];
+var leads = [];
+var editingId = null;
+var partnerCityFilter = 'All';
+var leadCityFilter = 'All';
+
+// ---- AUTH ----
+function checkLogin() {
+  var pass = document.getElementById('login-pass').value;
+  if (pass === ADMIN_PASS) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadAll();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+document.getElementById('login-pass').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') checkLogin();
+});
+function logout() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+
+// ---- TABS ----
+function switchTab(tab) {
+  var tabs = document.querySelectorAll('.tab');
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+  event.target.classList.add('active');
+  document.getElementById('tab-partners').style.display = tab === 'partners' ? 'block' : 'none';
+  document.getElementById('tab-leads').style.display = tab === 'leads' ? 'block' : 'none';
+}
+
+// ---- SUPABASE ----
+function sbFetch(path, options) {
+  var headers = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': 'Bearer ' + SUPABASE_KEY,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
+  return fetch(SUPABASE_URL + '/rest/v1/' + path, Object.assign({ headers: headers }, options || {}));
+}
+
+function loadAll() {
+  loadPartners();
+  loadLeads();
+}
+
+function loadPartners() {
+  sbFetch('floridatow_partners?order=created_at.desc').then(function(r) { return r.json(); }).then(function(data) {
+    partners = data || [];
+    renderStats();
+    renderPartners();
+    renderPartnerCityFilter();
+  }).catch(function() {
+    document.getElementById('partners-list').innerHTML = '<div class="empty">Error loading partners.</div>';
+  });
+}
+
+function loadLeads() {
+  sbFetch('floridatow_leads?order=created_at.desc&limit=100').then(function(r) { return r.json(); }).then(function(data) {
+    leads = data || [];
+    renderLeads();
+    renderLeadCityFilter();
+    renderStats();
+  }).catch(function() {
+    document.getElementById('leads-list').innerHTML = '<div class="empty">Error loading leads.</div>';
+  });
+}
+
+// ---- STATS ----
+function renderStats() {
+  var pro = 0, starter = 0, ppl = 0;
+  for (var i = 0; i < partners.length; i++) {
+    if (partners[i].plan === 'pro') pro++;
+    else if (partners[i].plan === 'starter') starter++;
+    else ppl++;
+  }
+  var mrr = (pro * 299) + (starter * 199);
+  document.getElementById('s-partners').textContent = partners.length;
+  document.getElementById('s-leads').textContent = leads.length;
+  document.getElementById('s-pro').textContent = pro;
+  document.getElementById('s-mrr').textContent = '$' + mrr.toLocaleString();
+}
+
+// ---- CITY FILTERS ----
+function renderPartnerCityFilter() {
+  var wrap = document.getElementById('partner-city-filter');
+  var html = '';
+  for (var i = 0; i < CITIES.length; i++) {
+    var active = partnerCityFilter === CITIES[i] ? ' active' : '';
+    html += '<button class="cf-btn' + active + '" data-city="' + CITIES[i] + '">' + CITIES[i] + '</button>';
+  }
+  wrap.innerHTML = html;
+  var btns = wrap.querySelectorAll('.cf-btn');
+  for (var j = 0; j < btns.length; j++) {
+    btns[j].addEventListener('click', function() {
+      partnerCityFilter = this.getAttribute('data-city');
+      renderPartnerCityFilter();
+      renderPartners();
+    });
+  }
+}
+
+function renderLeadCityFilter() {
+  var wrap = document.getElementById('lead-city-filter');
+  var html = '';
+  for (var i = 0; i < CITIES.length; i++) {
+    var active = leadCityFilter === CITIES[i] ? ' active' : '';
+    html += '<button class="cf-btn' + active + '" data-city="' + CITIES[i] + '">' + CITIES[i] + '</button>';
+  }
+  wrap.innerHTML = html;
+  var btns = wrap.querySelectorAll('.cf-btn');
+  for (var j = 0; j < btns.length; j++) {
+    btns[j].addEventListener('click', function() {
+      leadCityFilter = this.getAttribute('data-city');
+      renderLeadCityFilter();
+      renderLeads();
+    });
+  }
+}
+
+// ---- RENDER PARTNERS ----
+function planBadge(plan) {
+  if (plan === 'pro') return '<span class="badge badge-pro">Pro</span>';
+  if (plan === 'starter') return '<span class="badge badge-starter">Starter</span>';
+  return '<span class="badge badge-ppl">Pay/Lead</span>';
+}
+
+function renderPartners() {
+  var list = document.getElementById('partners-list');
+  var filtered = partners.filter(function(p) {
+    return partnerCityFilter === 'All' || p.city === partnerCityFilter;
+  });
+  if (filtered.length === 0) { list.innerHTML = '<div class="empty">No partners yet. Add your first one!</div>'; return; }
+  var html = '';
+  for (var i = 0; i < filtered.length; i++) {
+    var p = filtered[i];
+    var inactive = !p.active ? ' style="opacity:0.5"' : '';
+    html += '<div class="card"' + inactive + '>'
+      + '<div class="card-row">'
+      + '<div><div class="card-name">' + esc(p.company) + '</div>'
+      + '<div class="card-sub">' + esc(p.city) + (p.contact ? ' · ' + esc(p.contact) : '') + '</div>'
+      + planBadge(p.plan)
+      + (!p.active ? ' <span class="badge badge-inactive">Inactive</span>' : '')
+      + '</div>'
+      + '<div class="card-actions">'
+      + '<button class="btn-sm btn-edit" data-id="' + p.id + '">Edit</button>'
+      + '</div></div>'
+      + (p.email ? '<div class="card-sub" style="margin-top:8px;font-size:11px">' + esc(p.email) + (p.phone ? ' · ' + esc(p.phone) : '') + '</div>' : '')
+      + '</div>';
+  }
+  list.innerHTML = html;
+  var editBtns = list.querySelectorAll('.btn-edit');
+  for (var j = 0; j < editBtns.length; j++) {
+    editBtns[j].addEventListener('click', function() {
+      var id = this.getAttribute('data-id');
+      var partner = null;
+      for (var k = 0; k < partners.length; k++) { if (partners[k].id === id) { partner = partners[k]; break; } }
+      openModal(partner);
+    });
+  }
+}
+
+// ---- RENDER LEADS ----
+function renderLeads() {
+  var list = document.getElementById('leads-list');
+  var filtered = leads.filter(function(l) {
+    return leadCityFilter === 'All' || l.city === leadCityFilter;
+  });
+  if (filtered.length === 0) { list.innerHTML = '<div class="empty">No leads yet.</div>'; return; }
+  var html = '';
+  for (var i = 0; i < filtered.length; i++) {
+    var l = filtered[i];
+    var dt = l.created_at ? new Date(l.created_at).toLocaleString() : '';
+    html += '<div class="lead-card"><div class="lead-body">'
+      + '<div class="lead-city">📍 ' + esc(l.city || 'Unknown') + '</div>'
+      + '<div class="lead-name">' + esc(l.name || 'Unknown') + '</div>'
+      + '<div class="lead-detail">' + esc(l.phone || '') + (l.location ? ' · ' + esc(l.location) : '') + '</div>'
+      + (l.service ? '<div class="lead-detail">' + esc(l.service) + (l.vehicle ? ' · ' + esc(l.vehicle) : '') + '</div>' : '')
+      + '<div class="lead-time">' + dt + '</div>'
+      + (l.routed_to ? '<div class="lead-routed">Routed to: <span>' + esc(l.routed_to) + '</span></div>' : '<div class="lead-routed" style="color:#333">Not routed yet</div>')
+      + '</div>'
+      + (l.phone ? '<div class="lead-actions"><a class="lead-call" href="tel:' + esc(l.phone) + '">📞 Call Customer</a></div>' : '')
+      + '</div>';
+  }
+  list.innerHTML = html;
+}
+
+// ---- MODAL ----
+function openModal(partner) {
+  editingId = partner ? partner.id : null;
+  document.getElementById('modal-title').textContent = partner ? 'Edit Partner' : 'Add Partner';
+  document.getElementById('f-company').value = partner ? partner.company : '';
+  document.getElementById('f-contact').value = partner ? (partner.contact || '') : '';
+  document.getElementById('f-email').value = partner ? partner.email : '';
+  document.getElementById('f-phone').value = partner ? (partner.phone || '') : '';
+  document.getElementById('f-city').value = partner ? partner.city : 'Miami';
+  document.getElementById('f-plan').value = partner ? partner.plan : 'pro';
+  document.getElementById('del-btn').style.display = partner ? 'block' : 'none';
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  editingId = null;
+}
+
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+function savePartner() {
+  var company = document.getElementById('f-company').value.trim();
+  var email = document.getElementById('f-email').value.trim();
+  if (!company || !email) { alert('Company and email are required.'); return; }
+  var data = {
+    company: company,
+    contact: document.getElementById('f-contact').value.trim(),
+    email: email,
+    phone: document.getElementById('f-phone').value.trim(),
+    city: document.getElementById('f-city').value,
+    plan: document.getElementById('f-plan').value,
+    active: true
+  };
+  if (editingId) {
+    sbFetch('floridatow_partners?id=eq.' + editingId, { method: 'PATCH', body: JSON.stringify(data) }).then(function() {
+      closeModal(); loadPartners();
+    });
+  } else {
+    sbFetch('floridatow_partners', { method: 'POST', body: JSON.stringify(data) }).then(function() {
+      closeModal(); loadPartners();
+    });
+  }
+}
+
+function deletePartner() {
+  if (!editingId) return;
+  if (!confirm('Delete this partner?')) return;
+  sbFetch('floridatow_partners?id=eq.' + editingId, { method: 'DELETE' }).then(function() {
+    closeModal(); loadPartners();
+  });
+}
+
+function esc(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+
+</body>
+</html>
